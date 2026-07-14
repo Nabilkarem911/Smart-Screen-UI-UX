@@ -10,6 +10,10 @@ import {
   Users,
   GraduationCap,
   ChevronLeft,
+  BarChart3,
+  Calendar,
+  User,
+  Bell,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -19,8 +23,12 @@ const navItems = [
   { to: '/devices', icon: Tablet, label: 'الأجهزة', labelEn: 'Devices' },
   { to: '/media', icon: Image, label: 'مكتبة الميديا', labelEn: 'Media Library' },
   { to: '/groups', icon: FolderTree, label: 'المجموعات', labelEn: 'Groups' },
+  { to: '/analytics', icon: BarChart3, label: 'التحليلات', labelEn: 'Analytics' },
+  { to: '/calendar', icon: Calendar, label: 'الجدولة', labelEn: 'Calendar' },
   { to: '/users', icon: Users, label: 'المستخدمين', labelEn: 'Users' },
+  { to: '/notifications', icon: Bell, label: 'الإشعارات', labelEn: 'Notifications' },
   { to: '/subscriptions', icon: CreditCard, label: 'الاشتراكات', labelEn: 'Subscriptions' },
+  { to: '/profile', icon: User, label: 'الملف الشخصي', labelEn: 'Profile' },
   { to: '/settings', icon: Settings, label: 'الإعدادات', labelEn: 'Settings' },
   { to: '/tutorials', icon: GraduationCap, label: 'الشروحات', labelEn: 'Tutorials' },
 ]

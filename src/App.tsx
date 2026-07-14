@@ -13,6 +13,10 @@ import Subscriptions from '@/pages/Subscriptions'
 import Groups from '@/pages/Groups'
 import Users from '@/pages/Users'
 import Tutorials from '@/pages/Tutorials'
+import Analytics from '@/pages/Analytics'
+import CalendarPage from '@/pages/CalendarPage'
+import Profile from '@/pages/Profile'
+import Notifications from '@/pages/Notifications'
 
 export default function App() {
   return (
@@ -29,6 +33,10 @@ export default function App() {
         <Route path="subscriptions" element={<Subscriptions />} />
         <Route path="groups" element={<Groups />} />
         <Route path="users" element={<Users />} />
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="calendar" element={<CalendarPage />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="notifications" element={<Notifications />} />
         <Route path="tutorials" element={<Tutorials />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
