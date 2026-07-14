@@ -14,38 +14,54 @@ import {
   Calendar,
   User,
   Bell,
+  Shield,
+  HelpCircle,
+  Download,
+  Webhook,
+  Activity,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/context/I18nContext'
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'الرئيسية', labelEn: 'Dashboard' },
-  { to: '/screens', icon: Monitor, label: 'الشاشات', labelEn: 'Screens' },
-  { to: '/devices', icon: Tablet, label: 'الأجهزة', labelEn: 'Devices' },
-  { to: '/media', icon: Image, label: 'مكتبة الميديا', labelEn: 'Media Library' },
-  { to: '/groups', icon: FolderTree, label: 'المجموعات', labelEn: 'Groups' },
-  { to: '/analytics', icon: BarChart3, label: 'التحليلات', labelEn: 'Analytics' },
-  { to: '/calendar', icon: Calendar, label: 'الجدولة', labelEn: 'Calendar' },
-  { to: '/users', icon: Users, label: 'المستخدمين', labelEn: 'Users' },
-  { to: '/notifications', icon: Bell, label: 'الإشعارات', labelEn: 'Notifications' },
-  { to: '/subscriptions', icon: CreditCard, label: 'الاشتراكات', labelEn: 'Subscriptions' },
-  { to: '/profile', icon: User, label: 'الملف الشخصي', labelEn: 'Profile' },
-  { to: '/settings', icon: Settings, label: 'الإعدادات', labelEn: 'Settings' },
-  { to: '/tutorials', icon: GraduationCap, label: 'الشروحات', labelEn: 'Tutorials' },
+  { to: '/', icon: LayoutDashboard, labelKey: 'nav.dashboard' },
+  { to: '/screens', icon: Monitor, labelKey: 'nav.screens' },
+  { to: '/devices', icon: Tablet, labelKey: 'nav.devices' },
+  { to: '/media', icon: Image, labelKey: 'nav.media' },
+  { to: '/groups', icon: FolderTree, labelKey: 'nav.groups' },
+  { to: '/analytics', icon: BarChart3, labelKey: 'nav.analytics' },
+  { to: '/calendar', icon: Calendar, labelKey: 'nav.calendar' },
+  { to: '/users', icon: Users, labelKey: 'nav.users' },
+  { to: '/notifications', icon: Bell, labelKey: 'nav.notifications' },
+  { to: '/audit-logs', icon: Shield, labelKey: 'nav.auditLogs' },
+  { to: '/timeline', icon: Activity, labelKey: 'nav.timeline' },
+  { to: '/export-import', icon: Download, labelKey: 'nav.exportImport' },
+  { to: '/webhooks', icon: Webhook, labelKey: 'nav.webhooks' },
+  { to: '/subscriptions', icon: CreditCard, labelKey: 'nav.subscriptions' },
+  { to: '/profile', icon: User, labelKey: 'nav.profile' },
+  { to: '/settings', icon: Settings, labelKey: 'nav.settings' },
+  { to: '/help', icon: HelpCircle, labelKey: 'nav.help' },
+  { to: '/tutorials', icon: GraduationCap, labelKey: 'nav.tutorials' },
 ]
 
 interface SidebarProps {
   collapsed: boolean
   onToggle: () => void
+  mobileOpen?: boolean
+  onMobileClose?: () => void
 }
 
-export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
+export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: SidebarProps) {
+  const { t } = useI18n()
   return (
     <aside
       className={cn(
         'fixed top-0 right-0 h-screen z-50 flex flex-col',
         'bg-white/90 backdrop-blur-2xl border-l border-slate-200/60',
         'transition-all duration-300',
-        collapsed ? 'w-20' : 'w-72'
+        collapsed ? 'lg:w-20' : 'lg:w-72',
+        'w-72',
+        mobileOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'
       )}
     >
       {/* Logo */}
@@ -77,13 +93,14 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
           <NavLink
             key={item.to}
             to={item.to}
+            onClick={onMobileClose}
             className={({ isActive }) =>
               cn('nav-item', isActive && 'nav-item-active', collapsed && 'justify-center px-2')
             }
-            title={collapsed ? item.label : undefined}
+            title={collapsed ? t(item.labelKey) : undefined}
           >
             <item.icon className="w-5 h-5 flex-shrink-0" />
-            {!collapsed && <span>{item.label}</span>}
+            {!collapsed && <span>{t(item.labelKey)}</span>}
           </NavLink>
         ))}
       </nav>

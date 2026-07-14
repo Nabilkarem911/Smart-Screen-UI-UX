@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bell, Search, Globe, User, LogOut, ChevronDown, KeyRound, Moon, Sun, Monitor, AlertCircle, CheckCircle2, Clock } from 'lucide-react'
+import { Bell, Search, Globe, User, LogOut, ChevronDown, KeyRound, Moon, Sun, Monitor, AlertCircle, CheckCircle2, Clock, Tablet, Image as ImageIcon, Settings, Users as UsersIcon, BarChart3, Calendar, FileText, CornerDownLeft, Menu } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/context/AuthContext'
+import { useI18n } from '@/context/I18nContext'
 
 const notifications = [
   { id: 1, icon: AlertCircle, title: 'شاشة "الخارج" متوقفة', desc: 'الجهاز غير متصل منذ 3 ساعات', time: 'منذ 5 د', color: 'red', unread: true },
@@ -18,18 +19,64 @@ const notifColorMap: Record<string, string> = {
   gold: 'bg-gold-50 text-gold-600',
 }
 
-export default function TopBar() {
+export default function TopBar({ onMobileMenu }: { onMobileMenu?: () => void }) {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
+  const { lang, setLang, t } = useI18n()
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
-  const [lang, setLang] = useState<'ar' | 'en'>('ar')
   const userMenuRef = useRef<HTMLDivElement>(null)
   const notifRef = useRef<HTMLDivElement>(null)
 
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchActiveIndex, setSearchActiveIndex] = useState(0)
+  const searchRef = useRef<HTMLDivElement>(null)
+
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return []
+    const q = searchQuery.toLowerCase()
+    const pages = [
+      { type: 'page', label: 'لوحة التحكم', path: '/', icon: Monitor, category: 'صفحات' },
+      { type: 'page', label: 'الشاشات', path: '/screens', icon: Monitor, category: 'صفحات' },
+      { type: 'page', label: 'الأجهزة', path: '/devices', icon: Tablet, category: 'صفحات' },
+      { type: 'page', label: 'مكتبة الوسائط', path: '/media', icon: ImageIcon, category: 'صفحات' },
+      { type: 'page', label: 'التحليلات', path: '/analytics', icon: BarChart3, category: 'صفحات' },
+      { type: 'page', label: 'الجدولة', path: '/calendar', icon: Calendar, category: 'صفحات' },
+      { type: 'page', label: 'المستخدمين', path: '/users', icon: UsersIcon, category: 'صفحات' },
+      { type: 'page', label: 'الإشعارات', path: '/notifications', icon: Bell, category: 'صفحات' },
+      { type: 'page', label: 'الملف الشخصي', path: '/profile', icon: User, category: 'صفحات' },
+      { type: 'page', label: 'الإعدادات', path: '/settings', icon: Settings, category: 'صفحات' },
+    ]
+    const screens = [
+      { type: 'screen', label: 'شاشة الاستقبال', path: '/screens', icon: Monitor, category: 'شاشات' },
+      { type: 'screen', label: 'شاشة الكافيه', path: '/screens', icon: Monitor, category: 'شاشات' },
+      { type: 'screen', label: 'شاشة الممر', path: '/screens', icon: Monitor, category: 'شاشات' },
+      { type: 'screen', label: 'الشاشة الرئيسية', path: '/screens', icon: Monitor, category: 'شاشات' },
+    ]
+    const devices = [
+      { type: 'device', label: 'iPad-Pro', path: '/devices', icon: Tablet, category: 'أجهزة' },
+      { type: 'device', label: 'Samsung TV', path: '/devices', icon: Monitor, category: 'أجهزة' },
+      { type: 'device', label: 'Android Tablet', path: '/devices', icon: Tablet, category: 'أجهزة' },
+    ]
+    const users = [
+      { type: 'user', label: 'نبيل كريم', path: '/users', icon: User, category: 'مستخدمين' },
+      { type: 'user', label: 'أحمد محمد', path: '/users', icon: User, category: 'مستخدمين' },
+    ]
+    const all = [...pages, ...screens, ...devices, ...users]
+    return all.filter((item) => item.label.toLowerCase().includes(q)).slice(0, 8)
+  }, [searchQuery])
+
+  useEffect(() => {
+    setSearchActiveIndex(0)
+  }, [searchQuery])
+
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchOpen(false)
+      }
       if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
         setUserMenuOpen(false)
       }
@@ -41,30 +88,98 @@ export default function TopBar() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setSearchActiveIndex((prev) => Math.min(prev + 1, searchResults.length - 1))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setSearchActiveIndex((prev) => Math.max(prev - 1, 0))
+    } else if (e.key === 'Enter' && searchResults[searchActiveIndex]) {
+      e.preventDefault()
+      navigate(searchResults[searchActiveIndex].path)
+      setSearchOpen(false)
+      setSearchQuery('')
+    } else if (e.key === 'Escape') {
+      setSearchOpen(false)
+    }
+  }
+
   const unreadCount = notifications.filter(n => n.unread).length
 
   return (
     <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-2xl border-b border-slate-200/40">
-      <div className="flex items-center justify-between px-6 h-16">
+      <div className="flex items-center justify-between px-4 sm:px-6 h-16">
+        {/* Mobile Menu + Search */}
+        <div className="flex items-center gap-3 flex-1 max-w-md">
+          <button
+            onClick={onMobileMenu}
+            className="lg:hidden p-2.5 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-all flex-shrink-0"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
         {/* Search */}
-        <div className="relative flex-1 max-w-md">
+        <div className="relative flex-1" ref={searchRef}>
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
-            placeholder="بحث سريع..."
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setSearchOpen(true) }}
+            onFocus={() => setSearchOpen(true)}
+            onKeyDown={handleSearchKeyDown}
+            placeholder={t('common.search')}
             className="w-full pr-10 pl-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-royal-500/50 transition-all"
           />
+          {searchOpen && searchQuery && (
+            <div className="absolute top-full mt-2 w-full glass-card p-2 animate-fade-in max-h-96 overflow-y-auto">
+              {searchResults.length === 0 ? (
+                <div className="text-center py-6">
+                  <Search className="w-6 h-6 text-slate-200 mx-auto mb-2" />
+                  <p className="text-sm text-slate-400">لا توجد نتائج لـ "ـ{searchQuery}"</p>
+                </div>
+              ) : (
+                <>
+                  {searchResults.map((result, i) => (
+                    <button
+                      key={i}
+                      onClick={() => { navigate(result.path); setSearchOpen(false); setSearchQuery('') }}
+                      onMouseEnter={() => setSearchActiveIndex(i)}
+                      className={cn(
+                        'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-right',
+                        searchActiveIndex === i ? 'bg-royal-50' : 'hover:bg-slate-50'
+                      )}
+                    >
+                      <div className={cn(
+                        'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0',
+                        searchActiveIndex === i ? 'bg-royal-gradient text-white' : 'bg-slate-100 text-slate-500'
+                      )}>
+                        <result.icon className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className={cn('text-sm font-medium truncate', searchActiveIndex === i ? 'text-royal-700' : 'text-slate-700')}>
+                          {result.label}
+                        </p>
+                        <p className="text-[10px] text-slate-400">{result.category}</p>
+                      </div>
+                      {searchActiveIndex === i && <CornerDownLeft className="w-3.5 h-3.5 text-royal-400" />}
+                    </button>
+                  ))}
+                </>
+              )}
+            </div>
+          )}
+        </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Language Switcher */}
           <button
             onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-all text-sm"
+            className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-all text-sm"
           >
             <Globe className="w-4 h-4" />
-            <span>{lang === 'ar' ? 'عربي' : 'EN'}</span>
+            <span>{lang === 'ar' ? 'EN' : 'عربي'}</span>
           </button>
 
           {/* Dark Mode Toggle */}
@@ -136,7 +251,7 @@ export default function TopBar() {
                 <p className="text-slate-900 text-sm font-semibold leading-tight">{user?.username || 'bshml'}</p>
                 <p className="text-slate-400 text-xs">{user?.role || 'مدير النظام'}</p>
               </div>
-              <ChevronDown className={cn('w-4 h-4 text-slate-400 transition-transform', userMenuOpen && 'rotate-180')} />
+              <ChevronDown className={cn('hidden md:block w-4 h-4 text-slate-400 transition-transform', userMenuOpen && 'rotate-180')} />
             </button>
 
             {userMenuOpen && (

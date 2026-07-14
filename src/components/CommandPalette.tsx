@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   Search, LayoutDashboard, Monitor, Tablet, Image as ImageIcon,
   Settings, Users as UsersIcon, CreditCard, FolderTree, BookOpen,
-  CornerDownLeft, ArrowUp, ArrowDown, X, BarChart3, Calendar, User, Bell,
+  CornerDownLeft, ArrowUp, ArrowDown, X, BarChart3, Calendar, User, Bell, Shield, HelpCircle, Download, Webhook, Activity,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -16,11 +16,16 @@ const commands = [
   { id: 'calendar', label: 'الجدولة', icon: Calendar, path: '/calendar' },
   { id: 'users', label: 'المستخدمين', icon: UsersIcon, path: '/users' },
   { id: 'notifications', label: 'الإشعارات', icon: Bell, path: '/notifications' },
+  { id: 'audit-logs', label: 'سجل العمليات', icon: Shield, path: '/audit-logs' },
+  { id: 'timeline', label: 'الجدول الزمني', icon: Activity, path: '/timeline' },
+  { id: 'export-import', label: 'تصدير/استيراد', icon: Download, path: '/export-import' },
+  { id: 'webhooks', label: 'التكاملات', icon: Webhook, path: '/webhooks' },
   { id: 'profile', label: 'الملف الشخصي', icon: User, path: '/profile' },
   { id: 'settings', label: 'الإعدادات', icon: Settings, path: '/settings' },
   { id: 'subscriptions', label: 'الاشتراكات', icon: CreditCard, path: '/subscriptions' },
   { id: 'groups', label: 'المجموعات', icon: FolderTree, path: '/groups' },
   { id: 'tutorials', label: 'الدروس', icon: BookOpen, path: '/tutorials' },
+  { id: 'help', label: 'المساعدة', icon: HelpCircle, path: '/help' },
 ]
 
 export default function CommandPalette() {

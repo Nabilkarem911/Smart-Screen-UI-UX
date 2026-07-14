@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { ToastProvider } from '@/components/ToastProvider'
+import { I18nProvider } from '@/context/I18nContext'
 import Login from '@/pages/Login'
 import Dashboard from '@/pages/Dashboard'
 import Screens from '@/pages/Screens'
@@ -17,9 +18,15 @@ import Analytics from '@/pages/Analytics'
 import CalendarPage from '@/pages/CalendarPage'
 import Profile from '@/pages/Profile'
 import Notifications from '@/pages/Notifications'
+import AuditLogs from '@/pages/AuditLogs'
+import HelpSupport from '@/pages/HelpSupport'
+import ExportImport from '@/pages/ExportImport'
+import WebhooksIntegrations from '@/pages/WebhooksIntegrations'
+import ActivityTimeline from '@/pages/ActivityTimeline'
 
 export default function App() {
   return (
+    <I18nProvider>
     <ToastProvider>
     <Routes>
       <Route path="/login" element={<Login />} />
@@ -37,10 +44,16 @@ export default function App() {
         <Route path="calendar" element={<CalendarPage />} />
         <Route path="profile" element={<Profile />} />
         <Route path="notifications" element={<Notifications />} />
+        <Route path="audit-logs" element={<AuditLogs />} />
+        <Route path="help" element={<HelpSupport />} />
+        <Route path="export-import" element={<ExportImport />} />
+        <Route path="webhooks" element={<WebhooksIntegrations />} />
+        <Route path="timeline" element={<ActivityTimeline />} />
         <Route path="tutorials" element={<Tutorials />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
     </ToastProvider>
+    </I18nProvider>
   )
 }
