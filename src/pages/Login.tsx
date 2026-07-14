@@ -6,6 +6,7 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/context/AuthContext'
 
 const features = [
   { icon: Monitor, title: 'إدارة شاشات لا محدودة', desc: 'تحكم كامل في جميع شاشاتك من مكان واحد' },
@@ -22,12 +23,14 @@ const stats = [
 
 export default function Login() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [step, setStep] = useState<'login' | 'otp'>('login')
   const [showPassword, setShowPassword] = useState(false)
   const [otpMethod, setOtpMethod] = useState<'email' | 'whatsapp'>('email')
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', ''])
   const [loading, setLoading] = useState(false)
   const [activeFeature, setActiveFeature] = useState(0)
+  const [username, setUsername] = useState('')
   const otpRefs = useRef<(HTMLInputElement | null)[]>([])
 
   useEffect(() => {
@@ -51,6 +54,7 @@ export default function Login() {
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
+      login(username || 'admin')
       navigate('/')
     }, 1000)
   }
@@ -208,6 +212,8 @@ export default function Login() {
                       <input
                         type="text"
                         required
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                         placeholder="أدخل اسم المستخدم"
                         className="w-full pr-12 pl-4 py-3.5 rounded-xl bg-slate-50 border-2 border-slate-100 text-slate-900 placeholder-slate-300 text-sm transition-all focus:outline-none focus:border-royal-500 focus:bg-white focus:ring-4 focus:ring-royal-500/10"
                       />

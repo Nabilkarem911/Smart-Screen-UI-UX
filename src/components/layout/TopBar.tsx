@@ -2,9 +2,11 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Bell, Search, Globe, User, LogOut, ChevronDown, KeyRound } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/context/AuthContext'
 
 export default function TopBar() {
   const navigate = useNavigate()
+  const { user, logout } = useAuth()
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [lang, setLang] = useState<'ar' | 'en'>('ar')
   const userMenuRef = useRef<HTMLDivElement>(null)
@@ -56,11 +58,11 @@ export default function TopBar() {
               className="flex items-center gap-3 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 transition-all"
             >
               <div className="w-9 h-9 rounded-lg bg-royal-gradient flex items-center justify-center text-white font-bold text-sm">
-                ب
+                {user?.username?.charAt(0).toUpperCase() || 'ب'}
               </div>
               <div className="hidden md:block text-right">
-                <p className="text-slate-900 text-sm font-semibold leading-tight">bshml</p>
-                <p className="text-slate-400 text-xs">مدير النظام</p>
+                <p className="text-slate-900 text-sm font-semibold leading-tight">{user?.username || 'bshml'}</p>
+                <p className="text-slate-400 text-xs">{user?.role || 'مدير النظام'}</p>
               </div>
               <ChevronDown className={cn('w-4 h-4 text-slate-400 transition-transform', userMenuOpen && 'rotate-180')} />
             </button>
@@ -68,8 +70,8 @@ export default function TopBar() {
             {userMenuOpen && (
               <div className="absolute left-0 mt-2 w-56 glass-card p-2 animate-fade-in">
                 <div className="px-3 py-2 border-b border-slate-200/40 mb-1">
-                  <p className="text-slate-900 text-sm font-semibold">bshml</p>
-                  <p className="text-slate-400 text-xs">admin@smartscreen.com</p>
+                  <p className="text-slate-900 text-sm font-semibold">{user?.username || 'bshml'}</p>
+                  <p className="text-slate-400 text-xs">{user?.email || 'admin@smartscreen.com'}</p>
                 </div>
                 <button className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-all text-sm">
                   <User className="w-4 h-4" />
@@ -81,7 +83,7 @@ export default function TopBar() {
                 </button>
                 <div className="border-t border-slate-200/40 mt-1 pt-1">
                   <button
-                    onClick={() => navigate('/')}
+                    onClick={() => { logout(); navigate('/login') }}
                     className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-50 transition-all text-sm"
                   >
                     <LogOut className="w-4 h-4" />

@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
+import ProtectedRoute from '@/components/ProtectedRoute'
 import Login from '@/pages/Login'
 import Dashboard from '@/pages/Dashboard'
 import Screens from '@/pages/Screens'
@@ -16,7 +17,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/" element={<DashboardLayout />}>
+      <Route path="/" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
         <Route index element={<Dashboard />} />
         <Route path="screens" element={<Screens />} />
         <Route path="screens/edit/:id" element={<ScreenEditor />} />
@@ -28,7 +29,7 @@ export default function App() {
         <Route path="users" element={<Users />} />
         <Route path="tutorials" element={<Tutorials />} />
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   )
 }
