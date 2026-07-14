@@ -14,7 +14,7 @@ import {
 import { cn } from '@/lib/utils'
 
 const navItems = [
-  { to: '/dashboard', icon: LayoutDashboard, label: 'الرئيسية', labelEn: 'Dashboard' },
+  { to: '/', icon: LayoutDashboard, label: 'الرئيسية', labelEn: 'Dashboard' },
   { to: '/screens', icon: Monitor, label: 'الشاشات', labelEn: 'Screens' },
   { to: '/devices', icon: Tablet, label: 'الأجهزة', labelEn: 'Devices' },
   { to: '/media', icon: Image, label: 'مكتبة الميديا', labelEn: 'Media Library' },
