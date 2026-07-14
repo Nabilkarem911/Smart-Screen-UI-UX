@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   ArrowRight, Save, Eye, Plus, Trash2, Clock, Calendar,
   Globe, Monitor, Smartphone, Image, Video, Youtube,
   FileText, Code, GalleryHorizontalEnd, LayoutGrid,
   X, Sparkles, Wand2, ChevronLeft, ChevronRight,
+  Play, Pause, Maximize2, GripVertical,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -109,6 +110,11 @@ export default function ScreenEditor() {
   const [aiPrompt, setAiPrompt] = useState('')
   const [aiLoading, setAiLoading] = useState(false)
   const [aiResult, setAiResult] = useState('')
+  const [showPreview, setShowPreview] = useState(false)
+  const [previewIdx, setPreviewIdx] = useState(0)
+  const [previewPlaying, setPreviewPlaying] = useState(true)
+  const [draggedIdx, setDraggedIdx] = useState<number | null>(null)
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null)
   const [pages, setPages] = useState<PageItem[]>([
     { id: 1, title: 'صفحة ترحيب', duration: 10, template: 1, contentType: 'image', days: [true, true, true, true, true, true, true], timeStart: '00:00', timeEnd: '23:59', content: '' },
     { id: 2, title: 'إعلان العروض', duration: 15, template: 5, contentType: 'video', days: [false, false, false, false, false, true, true], timeStart: '18:00', timeEnd: '23:59', content: '' },
@@ -161,6 +167,38 @@ export default function ScreenEditor() {
     }, 2000)
   }
 
+  const nextPreviewPage = useCallback(() => {
+    setPreviewIdx((prev) => (prev + 1) % pages.length)
+  }, [pages.length])
+
+  const prevPreviewPage = () => {
+    setPreviewIdx((prev) => (prev - 1 + pages.length) % pages.length)
+  }
+
+  useEffect(() => {
+    if (!showPreview || !previewPlaying || pages.length === 0) return
+    const current = pages[previewIdx]
+    const timer = setTimeout(() => {
+      nextPreviewPage()
+    }, (current?.duration || 5) * 1000)
+    return () => clearTimeout(timer)
+  }, [showPreview, previewPlaying, previewIdx, pages, nextPreviewPage])
+
+  const handleDragStart = (idx: number) => setDraggedIdx(idx)
+  const handleDragOver = (e: React.DragEvent, idx: number) => {
+    e.preventDefault()
+    setDragOverIdx(idx)
+  }
+  const handleDrop = (idx: number) => {
+    if (draggedIdx === null || draggedIdx === idx) return
+    const newPages = [...pages]
+    const [moved] = newPages.splice(draggedIdx, 1)
+    newPages.splice(idx, 0, moved)
+    setPages(newPages)
+    setDraggedIdx(null)
+    setDragOverIdx(null)
+  }
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -178,7 +216,10 @@ export default function ScreenEditor() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button className="btn-ghost flex items-center gap-2 text-sm">
+          <button
+            onClick={() => { setShowPreview(true); setPreviewIdx(0); setPreviewPlaying(true) }}
+            className="btn-ghost flex items-center gap-2 text-sm"
+          >
             <Eye className="w-4 h-4" />
             <span>معاينة</span>
           </button>
@@ -277,12 +318,19 @@ export default function ScreenEditor() {
                 {pages.map((page, idx) => (
                   <button
                     key={page.id}
+                    draggable
+                    onDragStart={() => handleDragStart(idx)}
+                    onDragOver={(e) => handleDragOver(e, idx)}
+                    onDrop={() => handleDrop(idx)}
+                    onDragEnd={() => { setDraggedIdx(null); setDragOverIdx(null) }}
                     onClick={() => setActivePageId(page.id)}
                     className={cn(
-                      'w-full flex items-center gap-3 p-2.5 rounded-xl border transition-all text-right',
+                      'w-full flex items-center gap-3 p-2.5 rounded-xl border transition-all text-right cursor-grab active:cursor-grabbing',
                       activePageId === page.id
                         ? 'border-royal-500 bg-royal-50'
-                        : 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                        : 'border-slate-200 bg-slate-50 hover:border-slate-300',
+                      dragOverIdx === idx && draggedIdx !== null && 'border-royal-400 border-dashed bg-royal-50/50',
+                      draggedIdx === idx && 'opacity-40'
                     )}
                   >
                     <span className={cn(
@@ -291,6 +339,7 @@ export default function ScreenEditor() {
                     )}>
                       {idx + 1}
                     </span>
+                    <GripVertical className="w-4 h-4 text-slate-300 flex-shrink-0" />
                     <div className="w-14 aspect-video rounded-md bg-slate-100 border border-slate-200 overflow-hidden p-0.5 flex-shrink-0">
                       <TemplateThumbnail layout={page.template} orientation="landscape" />
                     </div>
@@ -573,6 +622,92 @@ export default function ScreenEditor() {
                   </button>
                 ))}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Slideshow Preview Modal */}
+      {showPreview && pages.length > 0 && (
+        <div className="fixed inset-0 z-[200] bg-slate-950 flex flex-col animate-fade-in">
+          {/* Top Bar */}
+          <div className="flex items-center justify-between p-4 bg-slate-900/80 backdrop-blur-sm">
+            <div className="flex items-center gap-3 text-white">
+              <span className="text-sm font-medium">معاينة الشاشة #{id}</span>
+              <span className="text-xs text-white/50">·</span>
+              <span className="text-xs text-white/70">{pages[previewIdx]?.title}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPreviewPlaying(!previewPlaying)}
+                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all"
+              >
+                {previewPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+              </button>
+              <button
+                onClick={() => setShowPreview(false)}
+                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Screen Content */}
+          <div className="flex-1 flex items-center justify-center p-8 relative">
+            {/* Nav buttons */}
+            <button
+              onClick={prevPreviewPage}
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all z-10"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+            <button
+              onClick={nextPreviewPage}
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all z-10"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+
+            {/* Screen */}
+            <div
+              key={previewIdx}
+              className="w-full max-w-4xl aspect-video rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden p-6 relative animate-fade-in"
+            >
+              <div className="w-full h-full rounded-xl overflow-hidden">
+                <TemplateThumbnail layout={pages[previewIdx]?.template || 1} orientation="landscape" />
+              </div>
+              {pages[previewIdx]?.content && (
+                <div className="absolute inset-0 flex items-center justify-center p-12">
+                  <p className="text-white text-center text-2xl font-medium whitespace-pre-line drop-shadow-2xl">
+                    {pages[previewIdx].content}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="p-4 bg-slate-900/80 backdrop-blur-sm space-y-3">
+            {/* Progress dots */}
+            <div className="flex items-center justify-center gap-2">
+              {pages.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setPreviewIdx(i)}
+                  className={cn(
+                    'h-1.5 rounded-full transition-all',
+                    i === previewIdx ? 'w-8 bg-royal-500' : 'w-1.5 bg-white/30 hover:bg-white/50'
+                  )}
+                />
+              ))}
+            </div>
+            <div className="flex items-center justify-between text-white/70 text-xs">
+              <span>صفحة {previewIdx + 1} من {pages.length}</span>
+              <span className="flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                {pages[previewIdx]?.duration}ث
+              </span>
             </div>
           </div>
         </div>
