@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   Mail, MessageCircle, Lock, User, Eye, EyeOff, ArrowLeft,
   ShieldCheck, Monitor, Zap, BarChart3, Sparkles, CheckCircle2,
-  ArrowRight,
+  ArrowRight, Apple,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/context/AuthContext'
@@ -31,7 +31,23 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [activeFeature, setActiveFeature] = useState(0)
   const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(true)
   const otpRefs = useRef<(HTMLInputElement | null)[]>([])
+
+  const passwordStrength = (() => {
+    if (!password) return 0
+    let score = 0
+    if (password.length >= 6) score++
+    if (password.length >= 10) score++
+    if (/[A-Z]/.test(password)) score++
+    if (/[0-9]/.test(password)) score++
+    if (/[^A-Za-z0-9]/.test(password)) score++
+    return Math.min(score, 4)
+  })()
+
+  const strengthLabels = ['ضعيفة', 'متوسطة', 'جيدة', 'قوية', 'ممتازة']
+  const strengthColors = ['bg-red-400', 'bg-orange-400', 'bg-gold-400', 'bg-emerald-400', 'bg-emerald-500']
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -227,6 +243,8 @@ export default function Login() {
                       <input
                         type={showPassword ? 'text' : 'password'}
                         required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
                         className="w-full pr-12 pl-12 py-3.5 rounded-xl bg-slate-50 border-2 border-slate-100 text-slate-900 placeholder-slate-300 text-sm transition-all focus:outline-none focus:border-royal-500 focus:bg-white focus:ring-4 focus:ring-royal-500/10"
                       />
@@ -238,13 +256,43 @@ export default function Login() {
                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
                     </div>
+                    {password && (
+                      <div className="mt-2 flex items-center gap-2">
+                        <div className="flex-1 flex gap-1">
+                          {[0, 1, 2, 3].map((i) => (
+                            <div
+                              key={i}
+                              className={cn(
+                                'h-1 flex-1 rounded-full transition-all',
+                                i < passwordStrength ? strengthColors[passwordStrength] : 'bg-slate-100'
+                              )}
+                            />
+                          ))}
+                        </div>
+                        <span className={cn('text-[10px] font-medium', passwordStrength >= 3 ? 'text-emerald-500' : 'text-slate-400')}>
+                          {strengthLabels[passwordStrength]}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-2 cursor-pointer group">
-                      <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-royal-600 focus:ring-royal-500/20 cursor-pointer" />
+                    <button
+                      type="button"
+                      onClick={() => setRememberMe(!rememberMe)}
+                      className="flex items-center gap-2 group"
+                    >
+                      <div className={cn(
+                        'relative w-9 h-5 rounded-full transition-all',
+                        rememberMe ? 'bg-royal-500' : 'bg-slate-200'
+                      )}>
+                        <span className={cn(
+                          'absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-all',
+                          rememberMe ? 'left-0.5' : 'right-0.5'
+                        )} />
+                      </div>
                       <span className="text-sm text-slate-500 group-hover:text-slate-700 transition-colors">تذكرني</span>
-                    </label>
+                    </button>
                     <button type="button" className="text-sm text-royal-600 hover:text-royal-700 font-medium transition-colors">
                       نسيت كلمة المرور؟
                     </button>
@@ -279,10 +327,10 @@ export default function Login() {
                   </div>
 
                   {/* Social Login */}
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-3">
                     <button
                       type="button"
-                      className="flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-slate-100 text-slate-600 hover:border-slate-200 hover:bg-slate-50 transition-all text-sm font-medium"
+                      className="flex items-center justify-center gap-1.5 py-3 rounded-xl border-2 border-slate-100 text-slate-600 hover:border-slate-200 hover:bg-slate-50 transition-all text-sm font-medium"
                     >
                       <svg className="w-5 h-5" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -294,12 +342,19 @@ export default function Login() {
                     </button>
                     <button
                       type="button"
-                      className="flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-slate-100 text-slate-600 hover:border-slate-200 hover:bg-slate-50 transition-all text-sm font-medium"
+                      className="flex items-center justify-center gap-1.5 py-3 rounded-xl border-2 border-slate-100 text-slate-600 hover:border-slate-200 hover:bg-slate-50 transition-all text-sm font-medium"
                     >
                       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#0A66C2">
                         <path d="M20.45 20.45h-3.55v-5.56c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z" />
                       </svg>
                       LinkedIn
+                    </button>
+                    <button
+                      type="button"
+                      className="flex items-center justify-center gap-1.5 py-3 rounded-xl border-2 border-slate-100 text-slate-600 hover:border-slate-200 hover:bg-slate-50 transition-all text-sm font-medium"
+                    >
+                      <Apple className="w-5 h-5" />
+                      Apple
                     </button>
                   </div>
 

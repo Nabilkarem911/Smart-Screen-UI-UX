@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import ProtectedRoute from '@/components/ProtectedRoute'
+import { ToastProvider } from '@/components/ToastProvider'
 import Login from '@/pages/Login'
 import Dashboard from '@/pages/Dashboard'
 import Screens from '@/pages/Screens'
@@ -15,6 +16,7 @@ import Tutorials from '@/pages/Tutorials'
 
 export default function App() {
   return (
+    <ToastProvider>
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
@@ -31,5 +33,6 @@ export default function App() {
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
+    </ToastProvider>
   )
 }
