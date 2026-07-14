@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
+import Chatbot from '@/components/Chatbot'
 import { cn } from '@/lib/utils'
 
 export default function DashboardLayout() {
@@ -16,6 +17,7 @@ export default function DashboardLayout() {
           <Outlet />
         </main>
       </div>
+      <Chatbot />
     </div>
   )
 }
