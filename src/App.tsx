@@ -30,6 +30,10 @@ import ABTesting from '@/pages/ABTesting'
 import Heatmaps from '@/pages/Heatmaps'
 import QRAnalytics from '@/pages/QRAnalytics'
 import ROICalculator from '@/pages/ROICalculator'
+import TemplatesMarketplace from '@/pages/TemplatesMarketplace'
+import VisualScreenBuilder from '@/pages/VisualScreenBuilder'
+import MultiZoneLayouts from '@/pages/MultiZoneLayouts'
+import DynamicWidgets from '@/pages/DynamicWidgets'
 
 export default function App() {
   return (
@@ -63,6 +67,10 @@ export default function App() {
         <Route path="heatmaps" element={<Heatmaps />} />
         <Route path="qr-analytics" element={<QRAnalytics />} />
         <Route path="roi-calculator" element={<ROICalculator />} />
+        <Route path="templates" element={<TemplatesMarketplace />} />
+        <Route path="screen-builder" element={<VisualScreenBuilder />} />
+        <Route path="multi-zone" element={<MultiZoneLayouts />} />
+        <Route path="widgets" element={<DynamicWidgets />} />
         <Route path="tutorials" element={<Tutorials />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />

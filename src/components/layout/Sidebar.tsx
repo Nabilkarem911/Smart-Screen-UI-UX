@@ -26,6 +26,9 @@ import {
   Flame,
   QrCode,
   Calculator,
+  Store,
+  Layout,
+  Zap,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useI18n } from '@/context/I18nContext'
@@ -44,6 +47,10 @@ const navItems = [
   { to: '/heatmaps', icon: Flame, labelKey: 'nav.heatmaps' },
   { to: '/qr-analytics', icon: QrCode, labelKey: 'nav.qrAnalytics' },
   { to: '/roi-calculator', icon: Calculator, labelKey: 'nav.roiCalculator' },
+  { to: '/templates', icon: Store, labelKey: 'nav.templates' },
+  { to: '/screen-builder', icon: Layout, labelKey: 'nav.screenBuilder' },
+  { to: '/multi-zone', icon: Layout, labelKey: 'nav.multiZone' },
+  { to: '/widgets', icon: Zap, labelKey: 'nav.widgets' },
   { to: '/calendar', icon: Calendar, labelKey: 'nav.calendar' },
   { to: '/users', icon: Users, labelKey: 'nav.users' },
   { to: '/notifications', icon: Bell, labelKey: 'nav.notifications' },
