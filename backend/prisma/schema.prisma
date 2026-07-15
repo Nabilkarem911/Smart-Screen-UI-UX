@@ -1,0 +1,282 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===== Users =====
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(EDITOR)
+  avatar    String?
+  phone     String?
+  isActive  Boolean  @default(true)
+  lastLogin DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  screens     Screen[]
+  mediaItems  MediaItem[]
+  contents    Content[]
+  approvals   ApprovalRequest[]
+  auditLogs   AuditLog[]
+  broadcasts  EmergencyBroadcast[]
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+// ===== Groups =====
+model Group {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  color       String   @default("#6366f1")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  screens Screen[]
+}
+
+// ===== Screens =====
+model Screen {
+  id          String       @id @default(uuid())
+  name        String
+  status      ScreenStatus @default(OFFLINE)
+  orientation Orientation   @default(LANDSCAPE)
+  location    String?
+  groupId     String?
+  group       Group?       @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  userId      String?
+  user        User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  resolution  String       @default("1920x1080")
+  tags        String[]
+  lastSeen    DateTime?
+  metadata    Json?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  contents  Content[]
+  devices   Device[]
+  analytics ScreenAnalytics[]
+}
+
+enum ScreenStatus {
+  ONLINE
+  OFFLINE
+  MAINTENANCE
+}
+
+enum Orientation {
+  LANDSCAPE
+  PORTRAIT
+  SQUARE
+}
+
+// ===== Devices =====
+model Device {
+  id         String       @id @default(uuid())
+  name       String
+  type       DeviceType   @default(MONITOR)
+  status     DeviceStatus @default(OFFLINE)
+  screenId   String?
+  screen     Screen?      @relation(fields: [screenId], references: [id], onDelete: SetNull)
+  os         String?
+  version    String?
+  ipAddress  String?
+  macAddress String?
+  cpu        Int          @default(0)
+  ram        Int          @default(0)
+  temperature Int         @default(0)
+  uptime     String       @default("0%")
+  lastSeen   DateTime?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+enum DeviceType {
+  MONITOR
+  TABLET
+  PLAYER
+  NETWORK
+}
+
+enum DeviceStatus {
+  ONLINE
+  DEGRADED
+  OFFLINE
+}
+
+// ===== Media =====
+model MediaItem {
+  id        String     @id @default(uuid())
+  name      String
+  type      MediaType
+  url       String
+  size      Int
+  mimeType  String
+  duration  Int?
+  width     Int?
+  height    Int?
+  tags      String[]
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+}
+
+// ===== Content =====
+model Content {
+  id          String         @id @default(uuid())
+  title       String
+  type        ContentType
+  body        String?
+  data        Json?
+  screenId    String?
+  screen      Screen?        @relation(fields: [screenId], references: [id], onDelete: SetNull)
+  userId      String
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      ContentStatus  @default(DRAFT)
+  priority    Int            @default(0)
+  scheduledAt DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+enum ContentType {
+  TEXT
+  IMAGE
+  VIDEO
+  SCHEDULE
+  WIDGET
+  TEMPLATE
+}
+
+enum ContentStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+  PUBLISHED
+  ARCHIVED
+}
+
+// ===== Approval Workflow =====
+model ApprovalRequest {
+  id          String          @id @default(uuid())
+  title       String
+  type        ApprovalType
+  description String
+  priority    Priority        @default(MEDIUM)
+  status      ApprovalStatus  @default(PENDING)
+  screenName  String
+  submittedById String
+  submittedBy User            @relation(fields: [submittedById], references: [id], onDelete: Cascade)
+  reviewedById String?
+  reviewedBy   User?          @relation("ReviewedBy", fields: [reviewedById], references: [id])
+  reviewNote  String?
+  submittedAt DateTime        @default(now())
+  reviewedAt  DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+enum ApprovalType {
+  CONTENT
+  IMAGE
+  VIDEO
+  SCHEDULE
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CHANGES_REQUESTED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// ===== Emergency Broadcast =====
+model EmergencyBroadcast {
+  id          String          @id @default(uuid())
+  message     String
+  type        BroadcastType
+  priority    String
+  duration    Int             @default(5)
+  screenIds   String[]
+  sentById    String
+  sentBy      User            @relation(fields: [sentById], references: [id], onDelete: Cascade)
+  acknowledged Int            @default(0)
+  sentAt      DateTime        @default(now())
+  createdAt   DateTime        @default(now())
+}
+
+enum BroadcastType {
+  FIRE
+  MEDICAL
+  SECURITY
+  WEATHER
+  TECHNICAL
+  CUSTOM
+}
+
+// ===== Analytics =====
+model ScreenAnalytics {
+  id        String   @id @default(uuid())
+  screenId  String
+  screen    Screen   @relation(fields: [screenId], references: [id], onDelete: Cascade)
+  views     Int      @default(0)
+  clicks    Int      @default(0)
+  dwellTime Int      @default(0)
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  @@unique([screenId, date])
+}
+
+// ===== Audit Log =====
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String
+  entity    String
+  entityId  String?
+  details   Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+}
+
+// ===== Notification =====
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  type      String   @default("info")
+  read      Boolean  @default(false)
+  userId    String?
+  createdAt DateTime @default(now())
+}
