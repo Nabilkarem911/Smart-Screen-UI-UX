@@ -29,6 +29,10 @@ import {
   Store,
   Layout,
   Zap,
+  Layers,
+  ClipboardCheck,
+  Siren,
+  Heart,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useI18n } from '@/context/I18nContext'
@@ -51,6 +55,10 @@ const navItems = [
   { to: '/screen-builder', icon: Layout, labelKey: 'nav.screenBuilder' },
   { to: '/multi-zone', icon: Layout, labelKey: 'nav.multiZone' },
   { to: '/widgets', icon: Zap, labelKey: 'nav.widgets' },
+  { to: '/bulk-operations', icon: Layers, labelKey: 'nav.bulkOperations' },
+  { to: '/approval-workflow', icon: ClipboardCheck, labelKey: 'nav.approvalWorkflow' },
+  { to: '/emergency-broadcast', icon: Siren, labelKey: 'nav.emergencyBroadcast' },
+  { to: '/health-monitoring', icon: Heart, labelKey: 'nav.healthMonitoring' },
   { to: '/calendar', icon: Calendar, labelKey: 'nav.calendar' },
   { to: '/users', icon: Users, labelKey: 'nav.users' },
   { to: '/notifications', icon: Bell, labelKey: 'nav.notifications' },

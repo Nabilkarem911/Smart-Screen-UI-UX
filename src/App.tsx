@@ -34,6 +34,10 @@ import TemplatesMarketplace from '@/pages/TemplatesMarketplace'
 import VisualScreenBuilder from '@/pages/VisualScreenBuilder'
 import MultiZoneLayouts from '@/pages/MultiZoneLayouts'
 import DynamicWidgets from '@/pages/DynamicWidgets'
+import BulkOperations from '@/pages/BulkOperations'
+import ApprovalWorkflow from '@/pages/ApprovalWorkflow'
+import EmergencyBroadcast from '@/pages/EmergencyBroadcast'
+import HealthMonitoring from '@/pages/HealthMonitoring'
 
 export default function App() {
   return (
@@ -71,6 +75,10 @@ export default function App() {
         <Route path="screen-builder" element={<VisualScreenBuilder />} />
         <Route path="multi-zone" element={<MultiZoneLayouts />} />
         <Route path="widgets" element={<DynamicWidgets />} />
+        <Route path="bulk-operations" element={<BulkOperations />} />
+        <Route path="approval-workflow" element={<ApprovalWorkflow />} />
+        <Route path="emergency-broadcast" element={<EmergencyBroadcast />} />
+        <Route path="health-monitoring" element={<HealthMonitoring />} />
         <Route path="tutorials" element={<Tutorials />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />

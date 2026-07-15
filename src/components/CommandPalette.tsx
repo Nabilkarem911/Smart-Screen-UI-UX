@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   Search, LayoutDashboard, Monitor, Tablet, Image as ImageIcon,
   Settings, Users as UsersIcon, CreditCard, FolderTree, BookOpen,
-  CornerDownLeft, ArrowUp, ArrowDown, X, BarChart3, Calendar, User, Bell, Shield, HelpCircle, Download, Webhook, Activity, Sparkles, Lightbulb, Tags, FlaskConical, Flame, QrCode, Calculator, Store, Layout, Zap,
+  CornerDownLeft, ArrowUp, ArrowDown, X, BarChart3, Calendar, User, Bell, Shield, HelpCircle, Download, Webhook, Activity, Sparkles, Lightbulb, Tags, FlaskConical, Flame, QrCode, Calculator, Store, Layout, Zap, Layers, ClipboardCheck, Siren, Heart,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -24,6 +24,10 @@ const commands = [
   { id: 'screen-builder', label: 'منشئ الشاشات', icon: Layout, path: '/screen-builder' },
   { id: 'multi-zone', label: 'تخطيطات متعددة', icon: Layout, path: '/multi-zone' },
   { id: 'widgets', label: 'ودجت ديناميكية', icon: Zap, path: '/widgets' },
+  { id: 'bulk-operations', label: 'عمليات مجمعة', icon: Layers, path: '/bulk-operations' },
+  { id: 'approval-workflow', label: 'سير الموافقات', icon: ClipboardCheck, path: '/approval-workflow' },
+  { id: 'emergency-broadcast', label: 'بث الطوارئ', icon: Siren, path: '/emergency-broadcast' },
+  { id: 'health-monitoring', label: 'مراقبة الصحة', icon: Heart, path: '/health-monitoring' },
   { id: 'calendar', label: 'الجدولة', icon: Calendar, path: '/calendar' },
   { id: 'users', label: 'المستخدمين', icon: UsersIcon, path: '/users' },
   { id: 'notifications', label: 'الإشعارات', icon: Bell, path: '/notifications' },
