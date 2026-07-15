@@ -26,6 +26,10 @@ import ActivityTimeline from '@/pages/ActivityTimeline'
 import AIContentGenerator from '@/pages/AIContentGenerator'
 import SmartRecommendations from '@/pages/SmartRecommendations'
 import AutoTagging from '@/pages/AutoTagging'
+import ABTesting from '@/pages/ABTesting'
+import Heatmaps from '@/pages/Heatmaps'
+import QRAnalytics from '@/pages/QRAnalytics'
+import ROICalculator from '@/pages/ROICalculator'
 
 export default function App() {
   return (
@@ -55,6 +59,10 @@ export default function App() {
         <Route path="ai-generator" element={<AIContentGenerator />} />
         <Route path="ai-recommendations" element={<SmartRecommendations />} />
         <Route path="auto-tagging" element={<AutoTagging />} />
+        <Route path="ab-testing" element={<ABTesting />} />
+        <Route path="heatmaps" element={<Heatmaps />} />
+        <Route path="qr-analytics" element={<QRAnalytics />} />
+        <Route path="roi-calculator" element={<ROICalculator />} />
         <Route path="tutorials" element={<Tutorials />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />

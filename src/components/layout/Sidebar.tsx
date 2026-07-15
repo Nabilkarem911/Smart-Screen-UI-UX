@@ -22,6 +22,10 @@ import {
   Sparkles,
   Lightbulb,
   Tags,
+  FlaskConical,
+  Flame,
+  QrCode,
+  Calculator,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useI18n } from '@/context/I18nContext'
@@ -36,6 +40,10 @@ const navItems = [
   { to: '/ai-generator', icon: Sparkles, labelKey: 'nav.aiGenerator' },
   { to: '/ai-recommendations', icon: Lightbulb, labelKey: 'nav.aiRecommendations' },
   { to: '/auto-tagging', icon: Tags, labelKey: 'nav.autoTagging' },
+  { to: '/ab-testing', icon: FlaskConical, labelKey: 'nav.abTesting' },
+  { to: '/heatmaps', icon: Flame, labelKey: 'nav.heatmaps' },
+  { to: '/qr-analytics', icon: QrCode, labelKey: 'nav.qrAnalytics' },
+  { to: '/roi-calculator', icon: Calculator, labelKey: 'nav.roiCalculator' },
   { to: '/calendar', icon: Calendar, labelKey: 'nav.calendar' },
   { to: '/users', icon: Users, labelKey: 'nav.users' },
   { to: '/notifications', icon: Bell, labelKey: 'nav.notifications' },

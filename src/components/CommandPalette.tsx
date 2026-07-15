@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   Search, LayoutDashboard, Monitor, Tablet, Image as ImageIcon,
   Settings, Users as UsersIcon, CreditCard, FolderTree, BookOpen,
-  CornerDownLeft, ArrowUp, ArrowDown, X, BarChart3, Calendar, User, Bell, Shield, HelpCircle, Download, Webhook, Activity, Sparkles, Lightbulb, Tags,
+  CornerDownLeft, ArrowUp, ArrowDown, X, BarChart3, Calendar, User, Bell, Shield, HelpCircle, Download, Webhook, Activity, Sparkles, Lightbulb, Tags, FlaskConical, Flame, QrCode, Calculator,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -16,6 +16,10 @@ const commands = [
   { id: 'ai-generator', label: 'مولد المحتوى AI', icon: Sparkles, path: '/ai-generator' },
   { id: 'ai-recommendations', label: 'اقتراحات ذكية', icon: Lightbulb, path: '/ai-recommendations' },
   { id: 'auto-tagging', label: 'تصنيف تلقائي', icon: Tags, path: '/auto-tagging' },
+  { id: 'ab-testing', label: 'اختبارات A/B', icon: FlaskConical, path: '/ab-testing' },
+  { id: 'heatmaps', label: 'خرائط حرارية', icon: Flame, path: '/heatmaps' },
+  { id: 'qr-analytics', label: 'تحليلات QR', icon: QrCode, path: '/qr-analytics' },
+  { id: 'roi-calculator', label: 'حاسبة ROI', icon: Calculator, path: '/roi-calculator' },
   { id: 'calendar', label: 'الجدولة', icon: Calendar, path: '/calendar' },
   { id: 'users', label: 'المستخدمين', icon: UsersIcon, path: '/users' },
   { id: 'notifications', label: 'الإشعارات', icon: Bell, path: '/notifications' },
