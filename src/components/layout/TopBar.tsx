@@ -245,11 +245,11 @@ export default function TopBar({ onMobileMenu }: { onMobileMenu?: () => void }) 
               className="flex items-center gap-3 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 transition-all"
             >
               <div className="w-9 h-9 rounded-lg bg-royal-gradient flex items-center justify-center text-white font-bold text-sm">
-                {user?.username?.charAt(0).toUpperCase() || 'ب'}
+                {user?.name?.charAt(0).toUpperCase() || 'م'}
               </div>
               <div className="hidden md:block text-right">
-                <p className="text-slate-900 text-sm font-semibold leading-tight">{user?.username || 'bshml'}</p>
-                <p className="text-slate-400 text-xs">{user?.role || 'مدير النظام'}</p>
+                <p className="text-slate-900 text-sm font-semibold leading-tight">{user?.name || 'مدير النظام'}</p>
+                <p className="text-slate-400 text-xs">{user?.role || 'ADMIN'}</p>
               </div>
               <ChevronDown className={cn('hidden md:block w-4 h-4 text-slate-400 transition-transform', userMenuOpen && 'rotate-180')} />
             </button>
@@ -257,7 +257,7 @@ export default function TopBar({ onMobileMenu }: { onMobileMenu?: () => void }) 
             {userMenuOpen && (
               <div className="absolute left-0 mt-2 w-56 glass-card p-2 animate-fade-in">
                 <div className="px-3 py-2 border-b border-slate-200/40 mb-1">
-                  <p className="text-slate-900 text-sm font-semibold">{user?.username || 'bshml'}</p>
+                  <p className="text-slate-900 text-sm font-semibold">{user?.name || 'مدير النظام'}</p>
                   <p className="text-slate-400 text-xs">{user?.email || 'admin@smartscreen.com'}</p>
                 </div>
                 <button className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-all text-sm">

@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  Mail, MessageCircle, Lock, User, Eye, EyeOff, ArrowLeft,
+  Mail, Lock, Eye, EyeOff, ArrowLeft,
   ShieldCheck, Monitor, Zap, BarChart3, Sparkles, CheckCircle2,
-  ArrowRight, Apple,
+  Apple,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/context/AuthContext'
@@ -24,16 +24,13 @@ const stats = [
 export default function Login() {
   const navigate = useNavigate()
   const { login } = useAuth()
-  const [step, setStep] = useState<'login' | 'otp'>('login')
   const [showPassword, setShowPassword] = useState(false)
-  const [otpMethod, setOtpMethod] = useState<'email' | 'whatsapp'>('email')
-  const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', ''])
   const [loading, setLoading] = useState(false)
   const [activeFeature, setActiveFeature] = useState(0)
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(true)
-  const otpRefs = useRef<(HTMLInputElement | null)[]>([])
+  const [error, setError] = useState('')
 
   const passwordStrength = (() => {
     if (!password) return 0
@@ -56,51 +53,17 @@ export default function Login() {
     return () => clearInterval(interval)
   }, [])
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError('')
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-      setStep('otp')
-    }, 1200)
-  }
-
-  const handleOtp = (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-      login(username || 'admin')
+    try {
+      await login(email, password)
       navigate('/')
-    }, 1000)
-  }
-
-  const handleOtpChange = (index: number, value: string) => {
-    if (value.length > 1) return
-    const newDigits = [...otpDigits]
-    newDigits[index] = value
-    setOtpDigits(newDigits)
-    if (value && index < 5) {
-      otpRefs.current[index + 1]?.focus()
-    }
-  }
-
-  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent) => {
-    if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
-      otpRefs.current[index - 1]?.focus()
-    }
-  }
-
-  const handleOtpPaste = (e: React.ClipboardEvent) => {
-    e.preventDefault()
-    const pasted = e.clipboardData.getData('text').slice(0, 6).split('')
-    const newDigits = [...otpDigits]
-    pasted.forEach((char, i) => {
-      if (i < 6) newDigits[i] = char
-    })
-    setOtpDigits(newDigits)
-    if (pasted.length < 6) {
-      otpRefs.current[pasted.length]?.focus()
+    } catch (err: any) {
+      setError(err.message || 'فشل تسجيل الدخول')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -209,9 +172,8 @@ export default function Login() {
 
           {/* Form Card */}
           <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 p-8 animate-fade-in">
-            {step === 'login' ? (
-              <>
-                {/* Login Step */}
+            <>
+                {/* Login Form */}
                 <div className="mb-8">
                   <div className="inline-flex w-12 h-12 rounded-2xl bg-royal-50 items-center justify-center mb-4">
                     <Lock className="w-6 h-6 text-royal-600" />
@@ -220,17 +182,23 @@ export default function Login() {
                   <p className="text-slate-400 text-sm">سجّل دخولك للوصول إلى لوحة التحكم</p>
                 </div>
 
+                {error && (
+                  <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">
+                    {error}
+                  </div>
+                )}
+
                 <form onSubmit={handleLogin} className="space-y-5">
                   <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-2">اسم المستخدم</label>
+                    <label className="block text-sm font-medium text-slate-600 mb-2">البريد الإلكتروني</label>
                     <div className="relative group">
-                      <User className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-royal-500 transition-colors" />
+                      <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-royal-500 transition-colors" />
                       <input
-                        type="text"
+                        type="email"
                         required
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="أدخل اسم المستخدم"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="admin@smartscreen.com"
                         className="w-full pr-12 pl-4 py-3.5 rounded-xl bg-slate-50 border-2 border-slate-100 text-slate-900 placeholder-slate-300 text-sm transition-all focus:outline-none focus:border-royal-500 focus:bg-white focus:ring-4 focus:ring-royal-500/10"
                       />
                     </div>
@@ -365,107 +333,7 @@ export default function Login() {
                     </button>
                   </div>
                 </form>
-              </>
-            ) : (
-              <>
-                {/* OTP Step */}
-                <button
-                  onClick={() => setStep('login')}
-                  className="flex items-center gap-1 text-slate-400 hover:text-slate-700 text-sm mb-6 transition-colors"
-                >
-                  <ArrowRight className="w-4 h-4" />
-                  رجوع
-                </button>
-
-                <div className="mb-8">
-                  <div className="inline-flex w-12 h-12 rounded-2xl bg-royal-50 items-center justify-center mb-4">
-                    <ShieldCheck className="w-6 h-6 text-royal-600" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-slate-900 mb-1">التحقق الثنائي</h2>
-                  <p className="text-slate-400 text-sm">اختر طريقة الاستلام وأدخل رمز التحقق</p>
-                </div>
-
-                {/* OTP Method Selection */}
-                <div className="grid grid-cols-2 gap-3 mb-6">
-                  <button
-                    onClick={() => setOtpMethod('email')}
-                    className={cn(
-                      'flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all',
-                      otpMethod === 'email'
-                        ? 'bg-royal-50 border-royal-500 text-royal-700'
-                        : 'bg-slate-50 border-slate-100 text-slate-500 hover:border-royal-200'
-                    )}
-                  >
-                    <Mail className="w-5 h-5" />
-                    <span className="text-sm font-medium">البريد الإلكتروني</span>
-                  </button>
-                  <button
-                    onClick={() => setOtpMethod('whatsapp')}
-                    className={cn(
-                      'flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all',
-                      otpMethod === 'whatsapp'
-                        ? 'bg-emerald-50 border-emerald-500 text-emerald-700'
-                        : 'bg-slate-50 border-slate-100 text-slate-500 hover:border-emerald-300'
-                    )}
-                  >
-                    <MessageCircle className="w-5 h-5" />
-                    <span className="text-sm font-medium">واتساب</span>
-                  </button>
-                </div>
-
-                {/* Info Banner */}
-                <div className="flex items-center gap-3 p-3.5 rounded-xl bg-royal-50/50 border border-royal-100 mb-6">
-                  <div className="w-8 h-8 rounded-lg bg-royal-100 flex items-center justify-center flex-shrink-0">
-                    <ShieldCheck className="w-4 h-4 text-royal-600" />
-                  </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    تم إرسال رمز التحقق إلى {otpMethod === 'email' ? 'بريدك الإلكتروني' : 'رقم واتساب الخاص بك'}
-                  </p>
-                </div>
-
-                <form onSubmit={handleOtp} className="space-y-6">
-                  {/* OTP Inputs */}
-                  <div className="flex justify-center gap-2.5" dir="ltr" onPaste={handleOtpPaste}>
-                    {otpDigits.map((digit, i) => (
-                      <input
-                        key={i}
-                        ref={(el) => { otpRefs.current[i] = el }}
-                        type="text"
-                        maxLength={1}
-                        value={digit}
-                        onChange={(e) => handleOtpChange(i, e.target.value)}
-                        onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                        className="w-12 h-14 text-center text-xl font-bold rounded-xl bg-slate-50 border-2 border-slate-100 text-slate-900 transition-all focus:outline-none focus:border-royal-500 focus:bg-white focus:ring-4 focus:ring-royal-500/10"
-                      />
-                    ))}
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full py-3.5 rounded-xl bg-royal-gradient text-white font-semibold text-sm transition-all hover:shadow-glow-purple hover:scale-[1.01] active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {loading ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        جاري التحقق...
-                      </>
-                    ) : (
-                      <>
-                        تأكيد ودخول
-                        <ArrowLeft className="w-4 h-4" />
-                      </>
-                    )}
-                  </button>
-
-                  <div className="text-center">
-                    <button type="button" className="text-sm text-slate-400 hover:text-royal-600 transition-colors">
-                      إعادة إرسال الرمز (00:59)
-                    </button>
-                  </div>
-                </form>
-              </>
-            )}
+            </>
           </div>
 
           {/* Footer */}

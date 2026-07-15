@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: smartscreen-backend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://smartscreen_user:SmartScreen2025@host.docker.internal:5432/smartscreen?schema=public
+      - JWT_SECRET=smartscreen_super_secret_key_2025_change_in_production
+      - JWT_EXPIRES_IN=7d
+      - PORT=3000
+      - NODE_ENV=production
+      - FRONTEND_URL=https://admin.orcanox.qzz.io
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./backend/uploads:/app/uploads
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: smartscreen-frontend
+    restart: always
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
