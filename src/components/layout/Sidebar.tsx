@@ -19,6 +19,9 @@ import {
   Download,
   Webhook,
   Activity,
+  Sparkles,
+  Lightbulb,
+  Tags,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useI18n } from '@/context/I18nContext'
@@ -30,6 +33,9 @@ const navItems = [
   { to: '/media', icon: Image, labelKey: 'nav.media' },
   { to: '/groups', icon: FolderTree, labelKey: 'nav.groups' },
   { to: '/analytics', icon: BarChart3, labelKey: 'nav.analytics' },
+  { to: '/ai-generator', icon: Sparkles, labelKey: 'nav.aiGenerator' },
+  { to: '/ai-recommendations', icon: Lightbulb, labelKey: 'nav.aiRecommendations' },
+  { to: '/auto-tagging', icon: Tags, labelKey: 'nav.autoTagging' },
   { to: '/calendar', icon: Calendar, labelKey: 'nav.calendar' },
   { to: '/users', icon: Users, labelKey: 'nav.users' },
   { to: '/notifications', icon: Bell, labelKey: 'nav.notifications' },

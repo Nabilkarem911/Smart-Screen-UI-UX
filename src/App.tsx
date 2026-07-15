@@ -23,6 +23,9 @@ import HelpSupport from '@/pages/HelpSupport'
 import ExportImport from '@/pages/ExportImport'
 import WebhooksIntegrations from '@/pages/WebhooksIntegrations'
 import ActivityTimeline from '@/pages/ActivityTimeline'
+import AIContentGenerator from '@/pages/AIContentGenerator'
+import SmartRecommendations from '@/pages/SmartRecommendations'
+import AutoTagging from '@/pages/AutoTagging'
 
 export default function App() {
   return (
@@ -49,6 +52,9 @@ export default function App() {
         <Route path="export-import" element={<ExportImport />} />
         <Route path="webhooks" element={<WebhooksIntegrations />} />
         <Route path="timeline" element={<ActivityTimeline />} />
+        <Route path="ai-generator" element={<AIContentGenerator />} />
+        <Route path="ai-recommendations" element={<SmartRecommendations />} />
+        <Route path="auto-tagging" element={<AutoTagging />} />
         <Route path="tutorials" element={<Tutorials />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   Search, LayoutDashboard, Monitor, Tablet, Image as ImageIcon,
   Settings, Users as UsersIcon, CreditCard, FolderTree, BookOpen,
-  CornerDownLeft, ArrowUp, ArrowDown, X, BarChart3, Calendar, User, Bell, Shield, HelpCircle, Download, Webhook, Activity,
+  CornerDownLeft, ArrowUp, ArrowDown, X, BarChart3, Calendar, User, Bell, Shield, HelpCircle, Download, Webhook, Activity, Sparkles, Lightbulb, Tags,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -13,6 +13,9 @@ const commands = [
   { id: 'devices', label: 'الأجهزة', icon: Tablet, path: '/devices' },
   { id: 'media', label: 'مكتبة الوسائط', icon: ImageIcon, path: '/media' },
   { id: 'analytics', label: 'التحليلات', icon: BarChart3, path: '/analytics' },
+  { id: 'ai-generator', label: 'مولد المحتوى AI', icon: Sparkles, path: '/ai-generator' },
+  { id: 'ai-recommendations', label: 'اقتراحات ذكية', icon: Lightbulb, path: '/ai-recommendations' },
+  { id: 'auto-tagging', label: 'تصنيف تلقائي', icon: Tags, path: '/auto-tagging' },
   { id: 'calendar', label: 'الجدولة', icon: Calendar, path: '/calendar' },
   { id: 'users', label: 'المستخدمين', icon: UsersIcon, path: '/users' },
   { id: 'notifications', label: 'الإشعارات', icon: Bell, path: '/notifications' },
